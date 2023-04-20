@@ -46,7 +46,7 @@ class CastMember(db.Model, SerializerMixin):
     production_id = db.Column(db.Integer, db.ForeignKey('productions.id'))
 
     # serializer rule that will help add our 'cate)member' to the response
-    serialize_rules = ('-production.cast_member',)
+    serialize_rules = ('-production.cast_member', '-created_at', '-updated_at')
 
     # DISPLAYS ALL THE DATA FOR PRODUCTION TABLE
     def __repr__(self):

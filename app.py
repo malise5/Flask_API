@@ -117,6 +117,8 @@ class CastMembers(Resource):
 api.add_resource(CastMembers, '/cast_members')
 
 
+# GET ONE ROUTE OF cast member
+
 class CastMemberByID(Resource):
     def get(self, id):
         cast_member = CastMember.query.filter_by(id=id).first()
@@ -124,6 +126,7 @@ class CastMemberByID(Resource):
         if not cast_member:
             abort(404, 'The Cast Member is not available')
         cast_member_dict = cast_member.to_dict()
+
         response = make_response(
             cast_member_dict,
             200
