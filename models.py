@@ -24,7 +24,9 @@ class Production(db.Model, SerializerMixin):
     cast_members = db.relationship('CastMember', backref='production')
 
     # serializer rule that will help add our 'cate_member' to the response
-    serialize_rules = ('-cast_members.production',)
+    # serialize_only = ('title',)
+    serialize_rules = ('-cast_members.production',
+                       '-created_at', '-updated_at')
 
 # DISPLAYS ALL THE DATA FOR PRODUCTION TABLE
     def __repr__(self):

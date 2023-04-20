@@ -1,7 +1,10 @@
-from flask import Flask, jsonify, make_response, request
+from flask import Flask, jsonify, make_response, request, abort
 from flask_migrate import Migrate
 
 from flask_restful import Api, Resource
+
+# error handling
+from werkzeug.exceptions import NotFound
 
 from models import db, Production, CastMember
 
@@ -24,16 +27,6 @@ api = Api(app)
 
 class Productions(Resource):
     def get(self):
-        # production_list = [{
-        #     "title": production.title,
-        #     "genre": production.genre,
-        #     "budget": production.budget,
-        #     "image": production.image,
-        #     "director": production.director,
-        #     "description": production.description,
-        #     "ongoing": production.ongoing,
-        # }for production in Production.query.all()]
-
         production_list = [production.to_dict()
                            for production in Production.query.all()]
 
@@ -75,8 +68,9 @@ api.add_resource(Productions, '/productions')
 class ProductionByID(Resource):
     def get(self, id):
         production = Production.query.filter(
-            Production.id == id).first().to_dict()
-
+            Production.id == id).first()
+        if not production:
+            abort(404, 'The production is not available')
         response = make_response(
             production,
             200
@@ -135,6 +129,17 @@ class CastMemberByID(Resource):
 
 
 api.add_resource(CastMemberByID, '/cast_members/<int:id>')
+
+# error handling
+
+
+@app.errorhandler(NotFound)
+def handle_not_found(e):
+    response = make_response(
+        "NotFound: Sorry the resource you are looking for can not be found",
+        404
+    )
+    return response
 
 
 # run the following in the terminal/shell
