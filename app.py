@@ -101,8 +101,22 @@ class ProductionByID(Resource):
         return response
 
 
-# patch the production by id
-    # def delete(self,id):
+# delete the production by id
+
+    def delete(self, id):
+        production = Production().query.filter_by(id=id).first()
+        if not production:
+            abort(404, "The production you are trying to delete can not be found")
+
+        db.session.delete(production)
+        db.session.commit()
+
+        response = make_response(
+            "Production Deleted Succesfully",
+            204
+        )
+
+        return response
 
 
 api.add_resource(ProductionByID, '/productions/<int:id>')
@@ -187,6 +201,25 @@ class CastMemberByID(Resource):
         response = make_response(
             cast_member_dict,
             201
+        )
+
+        return response
+
+
+# delete the production by id
+
+
+    def delete(self, id):
+        cast_member = CastMember.query.filter_by(id=id).first()
+        if not cast_member:
+            abort(404, "The cast Member you are trying to delete can not be found")
+
+        db.session.delete(cast_member)
+        db.session.commit()
+
+        response = make_response(
+            "Cast_Member Deleted Succesfully",
+            204
         )
 
         return response
