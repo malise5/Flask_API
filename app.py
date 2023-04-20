@@ -78,6 +78,17 @@ class ProductionByID(Resource):
         )
         return response
 
+# patch the production by id
+    def patch(self, id):
+        production = Production.query.filter_by(id=id).first()
+
+        if not production:
+            abort(404, 'the production you want to update was not found')
+
+        request_json = request.get_json()
+        for key in request_json:
+            setattr(production, key, request_json[key])
+
 
 api.add_resource(ProductionByID, '/productions/<int:id>')
 
@@ -121,6 +132,7 @@ api.add_resource(CastMembers, '/cast_members')
 
 class CastMemberByID(Resource):
     def get(self, id):
+        # cast_member = CastMember.query.filter(CastMember.id == id).first()
         cast_member = CastMember.query.filter_by(id=id).first()
 
         if not cast_member:
