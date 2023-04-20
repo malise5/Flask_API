@@ -67,12 +67,13 @@ api.add_resource(Productions, '/productions')
 
 class ProductionByID(Resource):
     def get(self, id):
-        production = Production.query.filter(
-            Production.id == id).first()
+        production = Production.query.filter_by(id=id).first()
         if not production:
             abort(404, 'The production is not available')
+
+        production_dict = production.to_dict()
         response = make_response(
-            production,
+            production_dict,
             200
         )
         return response
@@ -118,11 +119,11 @@ api.add_resource(CastMembers, '/cast_members')
 
 class CastMemberByID(Resource):
     def get(self, id):
-        cast_member = CastMember.query.filter(
-            CastMember.id == id).first().to_dict()
+        cast_member = CastMember.query.filter_by(id=id).first()
 
+        cast_member_dict = cast_member.to_dict()
         response = make_response(
-            cast_member,
+            cast_member_dict,
             200
         )
         return response
