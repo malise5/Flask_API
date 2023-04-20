@@ -1,3 +1,4 @@
 web: PORT=3000 npm start --prefix client
 api: gunicorn -b 127.0.0.1:5000 --chdir ./ app:app
 
+--run honcho start -f Procfile.dev--
