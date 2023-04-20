@@ -89,6 +89,21 @@ class ProductionByID(Resource):
         for key in request_json:
             setattr(production, key, request_json[key])
 
+        db.session.add(production)
+        db.session.commit()
+
+        production_dict = production.to_dict()
+        response = make_response(
+            production_dict,
+            201
+        )
+
+        return response
+
+
+# patch the production by id
+    # def delete(self,id):
+
 
 api.add_resource(ProductionByID, '/productions/<int:id>')
 
@@ -97,6 +112,8 @@ api.add_resource(ProductionByID, '/productions/<int:id>')
 
 
 class CastMembers(Resource):
+
+    # getting all the cast memebers
     def get(self):
         cast_memebers_list = [
             cast_memeber.to_dict() for cast_memeber in CastMember.query.all()
@@ -106,6 +123,8 @@ class CastMembers(Resource):
             200
         )
         return response
+
+# posting new  cast memebers
 
     def post(self):
         request_json = request.get_json()
@@ -131,6 +150,9 @@ api.add_resource(CastMembers, '/cast_members')
 # GET ONE ROUTE OF cast member
 
 class CastMemberByID(Resource):
+
+    # getting all the cast memebers by id
+
     def get(self, id):
         # cast_member = CastMember.query.filter(CastMember.id == id).first()
         cast_member = CastMember.query.filter_by(id=id).first()
@@ -145,8 +167,33 @@ class CastMemberByID(Resource):
         )
         return response
 
+# patching  cast memebers by id
+
+    def patch(self, id):
+
+        cast_member = CastMember.query.filter_by(id=id).first()
+
+        if not cast_member:
+            abort(404, 'Cant find the cast member')
+
+        request_json = request.get_json()
+        for key in request_json:
+            setattr(cast_member, key, request_json[key])
+
+        db.session.add(cast_member)
+        db.session.commit()
+
+        cast_member_dict = cast_member.to_dict()
+        response = make_response(
+            cast_member_dict,
+            201
+        )
+
+        return response
+
 
 api.add_resource(CastMemberByID, '/cast_members/<int:id>')
+
 
 # error handling
 
