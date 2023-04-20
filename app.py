@@ -42,6 +42,30 @@ class Productions(Resource):
         )
         return response
 
+# make a post request
+    def post(self):
+        request_json = request.get_json()
+        new_production = Production(
+            title=request_json("title"),
+            genre=request_json("genre"),
+            budget=request_json("budget"),
+            image=request_json("image"),
+            director=request_json("director"),
+            description=request_json("description"),
+            ongoing=request_json("ongoing"),
+
+        )
+        db.session.add(new_production)
+        db.session.commit()
+
+        response_dict = new_production.to_dict()
+        response = make_response(
+            response_dict,
+            201
+        )
+
+        return response
+
 
 api.add_resource(Productions, '/productions')
 
@@ -58,19 +82,6 @@ class ProductionByID(Resource):
             200
         )
         return response
-
-    def post(self):
-        request_json = request.get_json()
-        new_production = Production(
-            title=request_json("title"),
-            genre=request_json("genre"),
-            budget=request_json("budget"),
-            image=request_json("image"),
-            director=request_json("director"),
-            description=request_json("description"),
-            ongoing=request_json("ongoing"),
-
-        )
 
 
 api.add_resource(ProductionByID, '/productions/<int:id>')
