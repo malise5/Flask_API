@@ -10,6 +10,7 @@ app = Flask(__name__)
 # connects to the database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # avoid an error
+app.json.compact = False
 
 # migration
 migrate = Migrate(app, db)
@@ -46,13 +47,13 @@ class Productions(Resource):
     def post(self):
         request_json = request.get_json()
         new_production = Production(
-            title=request_json("title"),
-            genre=request_json("genre"),
-            budget=request_json("budget"),
-            image=request_json("image"),
-            director=request_json("director"),
-            description=request_json("description"),
-            ongoing=request_json("ongoing"),
+            title=request_json["title"],
+            genre=request_json["genre"],
+            budget=request_json["budget"],
+            image=request_json["image"],
+            director=request_json["director"],
+            description=request_json["description"],
+            ongoing=request_json["ongoing"],
 
         )
         db.session.add(new_production)
