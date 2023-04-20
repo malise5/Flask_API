@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, make_response, request
 from flask_migrate import Migrate
 
-from models import db, Production
+from flask_restful import Api, Resource
+
+from models import db, Production, CastMember
 
 # initialize the App
 app = Flask(__name__)
@@ -13,48 +15,52 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # avoid an error
 migrate = Migrate(app, db)
 db.init_app(app)  # initialize the application with sqlalchemy
 
+# initialize Api
+api = Api(app)
 
-# Decorator routings
-# runs before first request (check if user is logged in)
-@app.before_request
-def runs_before():
-    current_user = {"user_id": 1, "username": "kudez"}
-    print(current_user)
+# create a GET all Route
 
 
-@app.route('/')
-def index():
-    return '<h1>Hallo World!!</h1>'
+class Productions(Resource):
+    def get(self):
+        # production_list = [{
+        #     "title": production.title,
+        #     "genre": production.genre,
+        #     "budget": production.budget,
+        #     "image": production.image,
+        #     "director": production.director,
+        #     "description": production.description,
+        #     "ongoing": production.ongoing,
+        # }for production in Production.query.all()]
+
+        production_list = [production.to_dict()
+                           for production in Production.query.all()]
+
+        response = make_response(
+            production_list,
+            200
+        )
+        return response
 
 
-@app.route('/image')
-def image():
-    return '<h1>This is an image</h1>'
+api.add_resource(Productions, '/productions')
 
-# dynamic routing
-# find by title name
+# GET ALL CastMembers
 
 
-@app.route('/productions/<string:title>')
-def production(title):
-    production = Production.query.filter(Production.title == title).first()
-    production_response = {
-        "title": production.title,
-        "genre": production.genre,
-        "budget": production.budget,
-        "image": production.image,
-        "director": production.director,
-        "description": production.description,
-        "ongoing": production.ongoing,
-    }
-    response = make_response(
-        jsonify(production_response),
-        200
-    )
-    return response
+class CastMembers(Resource):
+    def get(self):
+        cast_memebers_list = [
+            cast_memeber.to_dict() for cast_memeber in CastMember.query.all()
+        ]
+        response = make_response(
+            cast_memebers_list,
+            200
+        )
+        return response
 
-# @app.route('/context')
-# def context():
+
+api.add_resource(CastMembers, '/cast_members')
 
 
 # run the following in the terminal/shell

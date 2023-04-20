@@ -1,5 +1,5 @@
 from app import app
-from models import db, Production
+from models import db, Production, CastMember
 
 print("========Seeding into the database🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱============")
 with app.app_context():
@@ -25,6 +25,17 @@ with app.app_context():
 
     db.session.add_all(productions)
     db.session.commit()
+
+# cast memebers
+    CastMember.query.delete()
+    cast_members = []
+
+    c1 = CastMember(name="Hamlet", role="King", production_id='Productions.id')
+    cast_members.append(c1)
+
+    db.session.add_all(cast_members)
+    db.session.commit()
+
     # pthon seed.py
     # flask shell
     print("==========Done Seeding 🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱============")
