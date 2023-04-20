@@ -59,9 +59,8 @@ class Productions(Resource):
         db.session.add(new_production)
         db.session.commit()
 
-        response_dict = new_production.to_dict()
         response = make_response(
-            response_dict,
+            new_production.to_dict(),
             201
         )
 
@@ -100,6 +99,23 @@ class CastMembers(Resource):
             cast_memebers_list,
             200
         )
+        return response
+
+    def post(self):
+        request_json = request.get_json()
+        new_castmember_json = CastMember(
+            name=request_json['name'],
+            role=request_json['role'],
+            production_id=request_json['production_id']
+        )
+        db.session.add(new_castmember_json)
+        db.session.commit()
+
+        response = make_response(
+            new_castmember_json.to_dict(),
+            201
+        )
+
         return response
 
 
