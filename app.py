@@ -122,6 +122,21 @@ class CastMembers(Resource):
 api.add_resource(CastMembers, '/cast_members')
 
 
+class CastMemberByID(Resource):
+    def get(self, id):
+        cast_member = CastMember.query.filter(
+            CastMember.id == id).first().to_dict()
+
+        response = make_response(
+            cast_member,
+            200
+        )
+        return response
+
+
+api.add_resource(CastMemberByID, '/cast_members/<int:id>')
+
+
 # run the following in the terminal/shell
 # export FLASK_APP=app.py
 # export FLASK_RUN_PORT=5555
