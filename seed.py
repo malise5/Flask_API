@@ -30,8 +30,14 @@ with app.app_context():
     CastMember.query.delete()
     cast_members = []
 
-    c1 = CastMember(name="Hamlet", role="King", production_id='Productions.id')
+    c1 = CastMember(name="Hamlet", role="King", production_id=p1.id)
     cast_members.append(c1)
+    c2 = CastMember(name="Hamlet", role="King", production_id=p2.id)
+    cast_members.append(c2)
+    c3 = CastMember(name="Hamlet", role="King", production_id=p3.id)
+    cast_members.append(c3)
+    c4 = CastMember(name="Hamlet", role="King", production_id=p4.id)
+    cast_members.append(c4)
 
     db.session.add_all(cast_members)
     db.session.commit()

@@ -18,7 +18,7 @@ db.init_app(app)  # initialize the application with sqlalchemy
 # initialize Api
 api = Api(app)
 
-# create a GET all Route
+# create a GET all Route for Production
 
 
 class Productions(Resource):
@@ -44,6 +44,37 @@ class Productions(Resource):
 
 
 api.add_resource(Productions, '/productions')
+
+# GET ONE ROUTE OF PRODUCTIONS
+
+
+class ProductionByID(Resource):
+    def get(self, id):
+        production = Production.query.filter(
+            Production.id == id).first().to_dict()
+
+        response = make_response(
+            production,
+            200
+        )
+        return response
+
+    def post(self):
+        request_json = request.get_json()
+        new_production = Production(
+            title=request_json("title"),
+            genre=request_json("genre"),
+            budget=request_json("budget"),
+            image=request_json("image"),
+            director=request_json("director"),
+            description=request_json("description"),
+            ongoing=request_json("ongoing"),
+
+        )
+
+
+api.add_resource(ProductionByID, '/productions/<int:id>')
+
 
 # GET ALL CastMembers
 
