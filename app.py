@@ -15,6 +15,13 @@ db.init_app(app)  # initialize the application with sqlalchemy
 
 
 # Decorator
+# runs before first request (check if user is logged in)
+@app.before_request
+def runs_before():
+    current_user = {"user_id": 1, "username": "kudez"}
+    print(current_user)
+
+
 @app.route('/')
 def index():
     return '<h1>Hallo World!!</h1>'
@@ -23,6 +30,31 @@ def index():
 @app.route('/image')
 def image():
     return '<h1>This is an image</h1>'
+
+# dynamic routing
+# find by title name
+
+
+@app.route('/productions/<string:title>')
+def production(title):
+    production = Production.query.filter(Production.title == title).first()
+    production_response = {
+        "title": production.title,
+        "genre": production.genre,
+        "budget": production.budget,
+        "image": production.image,
+        "director": production.director,
+        "description": production.description,
+        "ongoing": production.ongoing,
+    }
+    response = make_response(
+        jsonify(production_response),
+        200
+    )
+    return response
+
+# @app.route('/context')
+# def context():
 
 
 # run the following in the terminal/shell
