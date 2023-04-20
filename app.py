@@ -6,10 +6,16 @@ from flask_restful import Api, Resource
 # error handling
 from werkzeug.exceptions import NotFound
 
+# CORS from flask_cors
+from flask_cors import CORS
+
 from models import db, Production, CastMember
 
 # initialize the App
 app = Flask(__name__)
+CORS(app)
+
+
 # connects to the database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # avoid an error
@@ -38,22 +44,28 @@ class Productions(Resource):
 
 # make a post request
     def post(self):
+        # form_json = request.get_json()
         request_json = request.get_json()
-        new_production = Production(
-            title=request_json["title"],
-            genre=request_json["genre"],
-            budget=request_json["budget"],
-            image=request_json["image"],
-            director=request_json["director"],
-            description=request_json["description"],
-            ongoing=request_json["ongoing"],
+        try:
+            new_production = Production(
+                title=request_json["title"],
+                genre=request_json["genre"],
+                budget=request_json["budget"],
+                image=request_json["image"],
+                director=request_json["director"],
+                description=request_json["description"],
+                ongoing=request_json["ongoing"],
 
-        )
+            )
+        except ValueError as e:
+            abort(422, e.args[0])
+
         db.session.add(new_production)
         db.session.commit()
 
+        response_dict = new_production.to_dict()
         response = make_response(
-            new_production.to_dict(),
+            response_dict,
             201
         )
 

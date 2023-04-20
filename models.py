@@ -1,6 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 
+# validation
+from sqlalchemy.orm import validates
+
 db = SQLAlchemy()
 
 # CREATING THE TABLE MODEL
@@ -28,7 +31,19 @@ class Production(db.Model, SerializerMixin):
     serialize_rules = ('-cast_members.production',
                        '-created_at', '-updated_at')
 
+
+# use "validates" decorator to create a validation for images
+
+    @validates('image')
+    def validates_image(self, key, image_path):
+        if '.jpg' not in image_path:
+            raise ValueError("Image must be a .jpg")
+        return image_path
+
+
 # DISPLAYS ALL THE DATA FOR PRODUCTION TABLE
+
+
     def __repr__(self):
         return f'<Production Title:{self.title}, Genre:{self.genre}, Budget:{self.budget}, Image:{self.image}, Director:{self.director}, Description:{self.description}, Ongoing:{self.ongoing}'
 
@@ -39,7 +54,7 @@ class CastMember(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    role = db.Column(db.String)
+    role = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     # foreignkey
