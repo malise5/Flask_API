@@ -14,7 +14,7 @@ migrate = Migrate(app, db)
 db.init_app(app)  # initialize the application with sqlalchemy
 
 
-# Decorator
+# Decorator routings
 # runs before first request (check if user is logged in)
 @app.before_request
 def runs_before():
