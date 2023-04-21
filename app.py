@@ -1,4 +1,20 @@
-from flask import Flask, jsonify, make_response, request, abort
+# go into the terminal run the following in the terminal/shell
+# export FLASK_APP=app.py
+# export FLASK_RUN_PORT=5555
+
+# for creatind db migartion
+# flask db init
+# flask db revision --autogenerate -m "create production table"
+# flask db upgrade
+
+
+# flask run --debug
+
+# running with react together
+# honcho start -f Procfile.dev
+
+
+from flask import Flask, jsonify, make_response, request, abort, session
 from flask_migrate import Migrate
 
 from flask_restful import Api, Resource
@@ -27,6 +43,76 @@ db.init_app(app)  # initialize the application with sqlalchemy
 
 # initialize Api
 api = Api(app)
+
+
+# User route
+class Users(Resource):
+    def post(self):
+        form_json = request.get_json()
+        new_user = User(
+            name=form_json['name'],
+            email=form_json['email']
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        session['user_id'] = new_user.id
+
+        response = make_response(
+            new_user.to_dict(),
+            201
+        )
+        return response
+
+
+api.add_resource(Users, '/users')
+
+# LOGIN
+
+
+class Login(Resource):
+    def post(self):
+        user = User.query.filter_by(name=request.get_json()['name']).first()
+        session['user_id'] = user.id
+
+        response = make_response(
+            user.to_dict(),
+            200
+        )
+        return response
+
+
+api.add_resource(Login, '/login')
+
+
+# Authorize session
+
+
+class AuthorizeSession(Resource):
+    def get(self):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if user:
+            response = make_response(
+                user.to_dict(),
+                200
+            )
+            return response
+        else:
+            abort(401, "Unathorized access denied")
+
+
+api.add_resource(AuthorizeSession, '/authorized')
+
+
+# LOGOUT
+class Logout(Resource):
+    def delete(self):
+        session['user_id'] = None
+        response = make_response("", 204)
+        return response
+
+
+api.add_resource(Logout, '/logout')
+
 
 # create a GET all Route for Production
 
@@ -230,7 +316,9 @@ class CastMemberByID(Resource):
         db.session.commit()
 
         response = make_response(
-            "Cast_Member Deleted Succesfully",
+            jsonify(
+                "Cast_Member Deleted Succesfully"
+            ),
             204
         )
 
@@ -250,16 +338,3 @@ def handle_not_found(e):
         404
     )
     return response
-
-
-# run the following in the terminal/shell
-# export FLASK_APP=app.py
-# export FLASK_RUN_PORT=5555
-
-# for creatind db migartion
-# flask db init
-# flask db revision --autogenerate -m "create production table"
-# flask db upgrade
-
-
-# flask run --debug
