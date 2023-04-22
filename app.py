@@ -14,6 +14,7 @@
 # honcho start -f Procfile.dev
 
 
+from models import db, Production, CastMember, User
 from flask import Flask, jsonify, make_response, request, abort, session
 from flask_migrate import Migrate
 
@@ -24,12 +25,13 @@ from werkzeug.exceptions import NotFound
 
 # CORS from flask_cors
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 
-from models import db, Production, CastMember
 
 # initialize the App
 app = Flask(__name__)
 CORS(app)
+bcrypt = BCrypt(app)
 
 
 # connects to the database

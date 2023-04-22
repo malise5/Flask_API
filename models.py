@@ -1,10 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 
+
 # validation
 from sqlalchemy.orm import validates
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from app import bcrypt
 
 db = SQLAlchemy()
+
 
 # CREATING THE TABLE MODEL
 
@@ -68,4 +73,26 @@ class CastMember(db.Model, SerializerMixin):
         return f'<CastMember Name:{self.name}, Role:{self.role}'
 
 
-# GO TO APP.PY
+class User(db.Model, SerializerMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    email = db.Column(db.String)
+    _password_hash = db.Column(db.String)
+    admin = db.Column(db.Boolean, default=False)
+
+    @hybrid_property
+    def password_hash(self):
+        return self._password_hash
+
+    # setter method to protect our properties
+    @password_hash.setter
+    def password_hash(self, password):
+        password_hash = bcrypt.generate_password_hash(
+            password.encoded('utf-8'))
+        self._password_hash = password_hash.decode('utf-8')
+
+    # authenticate method uses bcrypt to verify password against hash in db
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(self._password_hash, password.encod('utf-8'))
